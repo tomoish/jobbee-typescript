@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import cookie from "cookie";
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
@@ -42,9 +42,17 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         });
       }
     } catch (error) {
-      res.status(error.response.status).json({
-        error: error.response && error.response.data.error,
-      });
+      if(error as AxiosError){
+        const err = error as AxiosError
+        if(err.response){
+          res.status(err.response.status).json({
+            error: err.response 
+          });
+        }
+      }
+      // res.status(error.response.status).json({
+      //   error: error.response && error.response.data.error,
+      // });
     }
   }
 };

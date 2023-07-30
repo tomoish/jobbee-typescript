@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import cookie from "cookie";
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
@@ -28,9 +28,15 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         });
       }
     } catch (error) {
-      res.status(error?.response.status).json({
-        error: "Something went wrong while retrieving user",
-      });
+      const err = error as AxiosError
+        if(err.response){
+          res.status(err.response.status).json({
+            error: "Something went wrong while retrieving user",
+          });
+        }
+      // res.status(err?.response.status).json({
+      //   error: "Something went wrong while retrieving user",
+      // });
     }
   }
 };
